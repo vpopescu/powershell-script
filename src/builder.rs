@@ -1,15 +1,39 @@
+use core::fmt;
 use std::collections::VecDeque;
 
 use crate::PsScript;
 
+/// Possible execution policies
+pub enum ExecutionPolicy {
+    Restricted,
+    AllSigned,
+    RemoteSigned,
+    Unrestricted,
+    Bypass,
+    Undefined,
+}
+impl fmt::Display for ExecutionPolicy {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            ExecutionPolicy::Restricted => write!(f, "Restricted"),
+            ExecutionPolicy::AllSigned => write!(f, "AllSigned"),
+            ExecutionPolicy::RemoteSigned => write!(f, "RemoteSigned"),
+            ExecutionPolicy::Unrestricted => write!(f, "Unrestricted"),
+            ExecutionPolicy::Bypass => write!(f, "Bypass"),
+            ExecutionPolicy::Undefined => write!(f, "Undefined"),
+        }
+    }
+}
+
 /// Builds a `PsScript` instance with configurable options for running your
 /// script.
 pub struct PsScriptBuilder {
-    args: VecDeque<&'static str>,
+    args: VecDeque<String>,
     no_profile: bool,
     non_interactive: bool,
     hidden: bool,
     print_commands: bool,
+    execution_policy: Option<ExecutionPolicy>,
 }
 
 impl PsScriptBuilder {
@@ -49,14 +73,26 @@ impl PsScriptBuilder {
         self
     }
 
+    /// If set to `true` it will print each command to `stdout` as they're run.
+    /// This can be particularely useful when debugging.
+    pub fn execution_policy(mut self, policy: ExecutionPolicy) -> Self {
+        self.execution_policy = Some(policy);
+        self
+    }
+
     pub fn build(self) -> PsScript {
         let mut args = self.args;
         if self.non_interactive {
-            args.push_front("-NonInteractive");
+            args.push_front("-NonInteractive".into());
         }
 
         if self.no_profile {
-            args.push_front("-NoProfile");
+            args.push_front("-NoProfile".into());
+        }
+
+        if self.execution_policy.is_some() {
+            args.push_front("-ExecutionPolicy".into());
+            args.push_front(self.execution_policy.unwrap().to_string())
         }
 
         PsScript {
@@ -68,13 +104,12 @@ impl PsScriptBuilder {
 }
 
 impl Default for PsScriptBuilder {
-
     /// Creates a default builder with `no_profile`, `non_interactive` and `hidden`
     /// options set to `true` and `print_commands` set to `false`.
     fn default() -> Self {
         let mut args = VecDeque::new();
-        args.push_back("-Command");
-        args.push_back("-");
+        args.push_back("-Command".into());
+        args.push_back("-".into());
 
         Self {
             args,
@@ -82,6 +117,7 @@ impl Default for PsScriptBuilder {
             non_interactive: true,
             hidden: true,
             print_commands: false,
+            execution_policy: None
         }
     }
 }

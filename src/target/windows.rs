@@ -11,7 +11,7 @@ const PATH_SPLITTER: char = ';';
 const CREATE_NO_WINDOW: u32 = 0x08000000;
 
 pub struct PsScript {
-    pub(crate) args: Vec<&'static str>,
+    pub(crate) args: Vec<String>,
     pub(crate) hidden: bool,
     pub(crate) print_commands: bool,
 }
