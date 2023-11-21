@@ -1,29 +1,6 @@
-use core::fmt;
 use std::collections::VecDeque;
 
 use crate::PsScript;
-
-/// Possible execution policies
-pub enum ExecutionPolicy {
-    Restricted,
-    AllSigned,
-    RemoteSigned,
-    Unrestricted,
-    Bypass,
-    Undefined,
-}
-impl fmt::Display for ExecutionPolicy {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            ExecutionPolicy::Restricted => write!(f, "Restricted"),
-            ExecutionPolicy::AllSigned => write!(f, "AllSigned"),
-            ExecutionPolicy::RemoteSigned => write!(f, "RemoteSigned"),
-            ExecutionPolicy::Unrestricted => write!(f, "Unrestricted"),
-            ExecutionPolicy::Bypass => write!(f, "Bypass"),
-            ExecutionPolicy::Undefined => write!(f, "Undefined"),
-        }
-    }
-}
 
 /// Builds a `PsScript` instance with configurable options for running your
 /// script.
@@ -33,7 +10,7 @@ pub struct PsScriptBuilder {
     non_interactive: bool,
     hidden: bool,
     print_commands: bool,
-    execution_policy: Option<ExecutionPolicy>,
+    execution_policy: Option<super::ExecutionPolicy>,
 }
 
 impl PsScriptBuilder {
@@ -75,7 +52,7 @@ impl PsScriptBuilder {
 
     /// If set to `true` it will print each command to `stdout` as they're run.
     /// This can be particularely useful when debugging.
-    pub fn execution_policy(mut self, policy: ExecutionPolicy) -> Self {
+    pub fn execution_policy(mut self, policy: super::ExecutionPolicy) -> Self {
         self.execution_policy = Some(policy);
         self
     }
@@ -117,7 +94,7 @@ impl Default for PsScriptBuilder {
             non_interactive: true,
             hidden: true,
             print_commands: false,
-            execution_policy: None
+            execution_policy: None,
         }
     }
 }

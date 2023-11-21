@@ -81,6 +81,31 @@ mod error;
 mod output;
 mod target;
 
+use core::fmt;
+
+/// Possible execution policies
+pub enum ExecutionPolicy {
+    Restricted,
+    AllSigned,
+    RemoteSigned,
+    Unrestricted,
+    Bypass,
+    Undefined,
+}
+impl fmt::Display for ExecutionPolicy {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            ExecutionPolicy::Restricted => write!(f, "Restricted"),
+            ExecutionPolicy::AllSigned => write!(f, "AllSigned"),
+            ExecutionPolicy::RemoteSigned => write!(f, "RemoteSigned"),
+            ExecutionPolicy::Unrestricted => write!(f, "Unrestricted"),
+            ExecutionPolicy::Bypass => write!(f, "Bypass"),
+            ExecutionPolicy::Undefined => write!(f, "Undefined"),
+        }
+    }
+}
+
+
 // Note: PowerShell Core can be isntalled on windows as well so we can't simply
 // discriminate based on target family.
 
